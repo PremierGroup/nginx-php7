@@ -42,7 +42,7 @@ RUN rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch
 
 #Add user
 RUN groupadd -r www && \
-    useradd -M -s /sbin/nologin -r -g www www    
+    useradd -M -s /sbin/nologin -r -g www www
 
 #Download nginx & php
 RUN mkdir -p /home/nginx-php && cd $_ && \
@@ -108,6 +108,7 @@ RUN cd /home/nginx-php && \
     --enable-bcmath \
     --enable-exif \
     --enable-fileinfo \
+    --enable-intl \
     --disable-rpath \
     --enable-ipv6 \
     --disable-debug \
