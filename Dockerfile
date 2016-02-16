@@ -1,11 +1,15 @@
 FROM centos:7
 MAINTAINER Skiychan <dev@skiy.net>
 ##
-# Nginx: 1.9.10
-# PHP  : 7.0.2
+# Nginx: 1.9.11
+# PHP  : 7.0.3
 ##
 #Install system library
 #RUN yum update -y
+
+ENV PHP_VERSION 7.0.3
+ENV NGINX_VERSION 1.9.11
+
 RUN yum install -y gcc \
     gcc-c++ \
     autoconf \
@@ -38,16 +42,12 @@ RUN rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch
 
 #Add user
 RUN groupadd -r www && \
-    useradd -M -s /sbin/nologin -r -g www www
-
-
-ENV PHP_VERSION 7.0.2
-ENV NGINX_VERSION 1.9.10    
+    useradd -M -s /sbin/nologin -r -g www www    
 
 #Download nginx & php
 RUN mkdir -p /home/nginx-php && cd $_ && \
     wget -c -O nginx.tar.gz http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz && \
-    wget -O php.tar.gz http://am1.php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror && \
+    wget -O php.tar.gz http://php.net/distributions/php-$PHP_VERSION.tar.gz && \
     curl -O -SL https://github.com/xdebug/xdebug/archive/XDEBUG_2_4_0RC3.tar.gz
 
 #Make install nginx
@@ -107,9 +107,9 @@ RUN cd /home/nginx-php && \
     --enable-opcache \
     --enable-bcmath \
     --enable-exif \
-    --disable-fileinfo \
+    --enable-fileinfo \
     --disable-rpath \
-    --disable-ipv6 \
+    --enable-ipv6 \
     --disable-debug \
     --without-pear && \
     make && make install
@@ -156,5 +156,8 @@ RUN chmod +x /start.sh
 #Set port
 EXPOSE 80 443 9000
 
+#Start it
+ENTRYPOINT ["/start.sh"]
+
 #Start web server
-CMD ["/bin/bash", "/start.sh"]
+#CMD ["/bin/bash", "/start.sh"]

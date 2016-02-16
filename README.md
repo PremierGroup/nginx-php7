@@ -1,8 +1,8 @@
 Nginx and PHP for Docker
 
 ## Version
-nginx: **1.9.10**   
-php:   **7.0.2**
+nginx: **1.9.11**   
+php:   **7.0.3**
 
 ## Installation
 Pull the image from the docker index rather than downloading the git repo. This prevents you having to build the image on every docker host.
@@ -45,14 +45,25 @@ skiychan/nginx-php7
 docker run --name nginx -p 8080:80 -d -v /your_php_extension:/usr/local/php/etc/php.d skiychan/nginx-php7
 ```
 
-## ChangeLog   
-**2016.01.25**    
-Add xdebug support
-   
-**2016.01.27**     
+## ChangeLog
+**2016 / 02 / 13:**     
+Update nginx to version 1.9.11
+
+**2016 / 02 / 04:**      
+Update php to version 7.0.3   
+
+**2016 / 01 / 29:**     
+Add fileinfo support   
+Add ipv6 support   
+
+**2016 / 01 / 27:**     
 Update nginx to version 1.9.10
+  
+**2016 / 01 / 25:**    
+Add xdebug support
+  
 
 ## Author
 Author: Skiychan    
 Email:  dev@skiy.net       
-Link:   http://www.zzzzy.com
+Link:   https://www.zzzzy.com
