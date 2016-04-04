@@ -1,8 +1,8 @@
 Nginx and PHP for Docker
 
 ## Version
-nginx: **1.9.11**   
-php:   **7.0.3**
+nginx: **1.9.12**   
+php:   **7.0.4**
 
 ## Installation
 Pull the image from the docker index rather than downloading the git repo. This prevents you having to build the image on every docker host.
@@ -58,10 +58,10 @@ Add ipv6 support
 
 **2016 / 01 / 27:**     
 Update nginx to version 1.9.10
-  
+
 **2016 / 01 / 25:**    
 Add xdebug support
-  
+
 
 ## Author
 Author: Skiychan    
