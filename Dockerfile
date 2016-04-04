@@ -7,8 +7,8 @@ MAINTAINER Skiychan <dev@skiy.net>
 #Install system library
 #RUN yum update -y
 
-ENV PHP_VERSION 7.0.3
-ENV NGINX_VERSION 1.9.11
+ENV PHP_VERSION 7.0.4
+ENV NGINX_VERSION 1.9.12
 
 RUN yum install -y gcc \
     gcc-c++ \
