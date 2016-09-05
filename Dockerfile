@@ -125,8 +125,9 @@ RUN cd /home/nginx-php && \
     make && \
     cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so
 
+ADD php.ini /usr/local/php/etc/php.ini
+
 RUN	cd /home/nginx-php/php-$PHP_VERSION && \
-    cp php.ini-production /usr/local/php/etc/php.ini && \
     cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
     cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
 
