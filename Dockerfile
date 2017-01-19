@@ -49,7 +49,8 @@ RUN groupadd -r www && \
 RUN mkdir -p /home/nginx-php && cd $_ && \
     wget -c -O nginx.tar.gz http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz && \
     wget -O php.tar.gz http://php.net/distributions/php-$PHP_VERSION.tar.gz && \
-    curl -O -SL https://github.com/xdebug/xdebug/archive/XDEBUG_2_4_0RC3.tar.gz
+    curl -O -SL https://github.com/xdebug/xdebug/archive/XDEBUG_2_4_0RC3.tar.gz && \
+    wget -O php-redis.tar.gz https://github.com/phpredis/phpredis/archive/3.1.0.tar.gz
 
 #Make install nginx
 RUN cd /home/nginx-php && \
@@ -124,6 +125,14 @@ RUN cd /home/nginx-php && \
     ./configure --enable-xdebug --with-php-config=/usr/local/php/bin/php-config && \
     make && \
     cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so
+    
+#Add php-redis extension
+RUN cd /home/nginx-php && \
+    tar -zxvf php-redis.tar.gz && \
+    cd phpredis-3.1.0 && \
+    /usr/local/php/bin/phpize && \
+    ./configure && \
+    make && make install
 
 ADD php.ini /usr/local/php/etc/php.ini
 
