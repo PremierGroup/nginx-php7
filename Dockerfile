@@ -131,7 +131,7 @@ RUN cd /home/nginx-php && \
     tar -zxvf php-redis.tar.gz && \
     cd phpredis-3.1.0 && \
     /usr/local/php/bin/phpize && \
-    ./configure && \
+    ./configure --with-php-config=/usr/local/php/bin/php-config && \
     make && make install
 
 ADD php.ini /usr/local/php/etc/php.ini
