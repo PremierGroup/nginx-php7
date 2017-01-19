@@ -132,7 +132,8 @@ RUN cd /home/nginx-php && \
     cd phpredis-3.1.0 && \
     /usr/local/php/bin/phpize && \
     ./configure --with-php-config=/usr/local/php/bin/php-config && \
-    make && make install
+    make && make install \
+    cp modules/redis.so /usr/local/php/lib/php/extensions/redis.so
 
 ADD php.ini /usr/local/php/etc/php.ini
 
