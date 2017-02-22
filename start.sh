@@ -88,4 +88,3 @@ EOF
 fi
 
 /usr/bin/supervisord -n -c /etc/supervisord.conf
-service crond start
