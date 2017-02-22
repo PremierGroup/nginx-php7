@@ -16,7 +16,9 @@ RUN yum install -y gcc \
     automake \
     libtool \
     make \
-    cmake && \
+    cmake \
+    cronie \
+    && \
     yum clean all
 
 #Install PHP library
