@@ -87,4 +87,6 @@ server {
 EOF
 fi
 
+cron -f &
+
 /usr/bin/supervisord -n -c /etc/supervisord.conf
