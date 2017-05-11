@@ -164,8 +164,9 @@ ADD redis.ini /usr/local/php/etc/php.d/redis.ini
 
 #Update nginx config
 ADD nginx.conf /usr/local/nginx/conf/nginx.conf
-ADD /etc/nginx/ssl/winetransit.crt /usr/local/nginx/conf/winetransit.crt
-ADD /etc/nginx/ssl/winetransit.key /usr/local/nginx/conf/winetransit.key
+ADD winetransit.crt    /usr/local/nginx/conf/winetransit.crt
+ADD winetransit.key    /usr/local/nginx/conf/winetransit.key
+ADD dhparams.pem       /usr/local/nginx/conf/dhparams.pem
 
 #Start
 ADD start.sh /start.sh
