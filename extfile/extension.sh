@@ -14,9 +14,3 @@ cd /home/extension/xdebug-XDEBUG_2_4_0RC3 && \
 ./configure --enable-xdebug --with-php-config=/usr/local/php/bin/php-config && \
 make && make install
 
-#Add extension mongodb
-curl -Lk https://pecl.php.net/get/mongodb-1.1.8.tgz | gunzip | tar x -C /home/extension && \
-cd /home/extension/mongodb-1.1.8 && \
-/usr/local/php/bin/phpize && \
-./configure --with-php-config=/usr/local/php/bin/php-config && \
-make && make install
