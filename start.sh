@@ -6,11 +6,43 @@
 # Version:
 # Created Time: 2015/12/13
 #########################################################################
+
+# Add PHP Extension
+if [ -f "/data/phpext/extension.sh" ]; then
+    #Add support
+    yum install -y gcc \
+        gcc-c++ \
+        autoconf \
+        automake \
+        libtool \
+        make \
+        cmake && \
+
+        mkdir -p /home/extension && \
+
+    sh /data/phpext/extension.sh
+
+    mv /data/phpext/extension.sh /data/phpext/extension_back.sh
+
+    #Clean OS
+    yum remove -y gcc \
+        gcc-c++ \
+        autoconf \
+        automake \
+        libtool \
+        make \
+        cmake && \
+        yum clean all && \
+        rm -rf /tmp/* /var/cache/{yum,ldconfig} /etc/my.cnf{,.d} && \
+        mkdir -p --mode=0755 /var/cache/{yum,ldconfig} && \
+        find /var/log -type f -delete && \
+        rm -rf /home/extension/*
+fi
+
 Nginx_Install_Dir=/usr/local/nginx
 DATA_DIR=/data/www
 
 set -e
-
 chown -R www.www $DATA_DIR
 
 if [[ -n "$PROXY_WEB" ]]; then
@@ -64,7 +96,7 @@ server {
     ssl_certificate_key ssl/${PROXY_KEY};
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_prefer_server_ciphers on;
-    ssl_ciphers ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:RC4+RSA:+HIGH:+MEDIUM;
+    ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
     keepalive_timeout 70;
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 10m;

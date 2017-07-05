@@ -1,16 +1,11 @@
 FROM centos:7
 MAINTAINER Skiychan <dev@skiy.net>
-##
-# Nginx: 1.11.1
-# PHP  : 7.0.15
-##
-#Install system library
-#RUN yum update -y
 
-ENV PHP_VERSION 7.0.15
-ENV NGINX_VERSION 1.11.1
+ENV NGINX_VERSION 1.11.6
+ENV PHP_VERSION 7.1.0
 
-RUN yum install -y gcc \
+RUN set -x && \
+    yum install -y gcc \
     gcc-c++ \
     autoconf \
     automake \
@@ -19,13 +14,11 @@ RUN yum install -y gcc \
     cmake \
     cronie \
     && \
-    yum clean all
 
 #Install PHP library
 ## libmcrypt-devel DIY
-RUN rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm && \
-    yum install -y wget \
-    zlib \
+    rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm && \
+    yum install -y zlib \
     zlib-devel \
     openssl \
     openssl-devel \
@@ -41,23 +34,18 @@ RUN rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch
     openssh-server \
     python-setuptools \
     libicu libicu-devel && \
-    yum clean all
 
 #Add user
-RUN groupadd -r www && \
-    useradd -M -s /sbin/nologin -r -g www www
+    mkdir -p /data/{www,phpext} && \
+    useradd -r -s /sbin/nologin -d /data/www -m -k no www && \
 
 #Download nginx & php
-RUN mkdir -p /home/nginx-php && cd $_ && \
-    wget -c -O nginx.tar.gz http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz && \
-    wget -O php.tar.gz http://php.net/distributions/php-$PHP_VERSION.tar.gz && \
-    curl -O -SL https://github.com/xdebug/xdebug/archive/XDEBUG_2_4_0RC3.tar.gz && \
-    wget -O php-redis.tar.gz https://github.com/phpredis/phpredis/archive/3.1.0.tar.gz
+    mkdir -p /home/nginx-php && cd $_ && \
+    curl -Lk http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | gunzip | tar x -C /home/nginx-php && \
+    curl -Lk http://php.net/distributions/php-$PHP_VERSION.tar.gz | gunzip | tar x -C /home/nginx-php && \
 
 #Make install nginx
-RUN cd /home/nginx-php && \
-    tar -zxvf nginx.tar.gz && \
-    cd nginx-$NGINX_VERSION && \
+    cd /home/nginx-php/nginx-$NGINX_VERSION && \
     ./configure --prefix=/usr/local/nginx \
     --user=www --group=www \
     --error-log-path=/var/log/nginx_error.log \
@@ -68,12 +56,10 @@ RUN cd /home/nginx-php && \
     --without-mail_pop3_module \
     --without-mail_imap_module \
     --with-http_gzip_static_module && \
-    make && make install
+    make && make install && \
 
 #Make install php
-RUN cd /home/nginx-php && \
-    tar zvxf php.tar.gz && \
-    cd php-$PHP_VERSION && \
+    cd /home/nginx-php/php-$PHP_VERSION && \
     ./configure --prefix=/usr/local/php \
     --with-config-file-path=/usr/local/php/etc \
     --with-config-file-scan-dir=/usr/local/php/etc/php.d \
@@ -117,56 +103,54 @@ RUN cd /home/nginx-php && \
     --enable-ipv6 \
     --disable-debug \
     --without-pear && \
-    make && make install
-
-#Add xdebug extension
-RUN cd /home/nginx-php && \
-    tar -zxvf XDEBUG_2_4_0RC3.tar.gz && \
-    cd xdebug-XDEBUG_2_4_0RC3 && \
-    /usr/local/php/bin/phpize && \
-    ./configure --enable-xdebug --with-php-config=/usr/local/php/bin/php-config && \
-    make && \
-    cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so
-    
-#Add php-redis extension
-RUN cd /home/nginx-php && \
-    tar -zxvf php-redis.tar.gz && \
-    cd phpredis-3.1.0 && \
-    /usr/local/php/bin/phpize && \
-    ./configure --with-php-config=/usr/local/php/bin/php-config && \
     make && make install && \
-    cp modules/redis.so /usr/local/php/lib/php/extensions/redis.so
 
-ADD php.ini /usr/local/php/etc/php.ini
 
-RUN	cd /home/nginx-php/php-$PHP_VERSION && \
+#Install php-fpm
+    cd /home/nginx-php/php-$PHP_VERSION && \
     cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
-    cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
+    cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf && \
 
 #Install supervisor
-RUN easy_install supervisor && \
-    mkdir -p /var/log/supervisor && \
-    mkdir -p /var/run/sshd && \
-    mkdir -p /var/run/supervisord
+    easy_install supervisor && \
+    mkdir -p /var/{log/supervisor,run/{sshd,supervisord}} && \
+
+#Clean OS
+    yum remove -y gcc \
+    gcc-c++ \
+    autoconf \
+    automake \
+    libtool \
+    make \
+    cmake && \
+    yum clean all && \
+    rm -rf /tmp/* /var/cache/{yum,ldconfig} /etc/my.cnf{,.d} && \
+    mkdir -p --mode=0755 /var/cache/{yum,ldconfig} && \
+    find /var/log -type f -delete && \
+    rm -rf /home/nginx-php && \
+
+#Change Mod from webdir
+    chown -R www:www /data/www
+
+# Add custom php.ini
+ADD php.ini /usr/local/php/etc/php.ini
 
 #Add supervisord conf
-ADD supervisord.conf /etc/supervisord.conf
-
-#Remove zips
-RUN cd / && rm -rf /home/nginx-php
+ADD supervisord.conf /etc/
 
 #Create web folder
-VOLUME ["/data/www", "/usr/local/nginx/conf/ssl", "/usr/local/nginx/conf/vhost", "/usr/local/php/etc/php.d"]
-ADD index.php /data/www/index.php
+VOLUME ["/data/www", "/usr/local/nginx/conf/ssl", "/usr/local/nginx/conf/vhost", "/usr/local/php/etc/php.d", "/data/phpext"]
 
-ADD xdebug.ini /usr/local/php/etc/php.d/xdebug.ini
-ADD redis.ini /usr/local/php/etc/php.d/redis.ini
+ADD index.php /data/www/
+
+ADD extini/ /usr/local/php/etc/php.d/
+ADD extfile/ /data/phpext/
 
 #Update nginx config
-ADD nginx.conf /usr/local/nginx/conf/nginx.conf
+ADD nginx.conf /usr/local/nginx/conf/
 
 #Start
-ADD start.sh /start.sh
+ADD start.sh /
 RUN chmod +x /start.sh
 
 #Set port
