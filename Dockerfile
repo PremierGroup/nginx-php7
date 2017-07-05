@@ -37,6 +37,7 @@ RUN set -x && \
 
 #Add user
     mkdir -p /data/www && \
+    mkdir -p /home/extension && \
     useradd -r -s /sbin/nologin -d /data/www -m -k no www && \
 
 #Download nginx & php
