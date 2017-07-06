@@ -36,7 +36,7 @@ RUN set -x && \
     libicu libicu-devel && \
 
 #Add user
-    mkdir -p /data/www && \
+    mkdir -p /data/{www,phpext} && \
     useradd -r -s /sbin/nologin -d /data/www -m -k no www && \
 
 #Download nginx & php
@@ -111,20 +111,6 @@ RUN set -x && \
     cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
     cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf && \
 
-#Install xdebug extension
-    curl -Lk https://github.com/xdebug/xdebug/archive/XDEBUG_2_4_0RC3.tar.gz | gunzip | tar x -C /home/extension && \
-    cd /home/extension/xdebug-XDEBUG_2_4_0RC3 && \
-    /usr/local/php/bin/phpize && \
-    ./configure --enable-xdebug --with-php-config=/usr/local/php/bin/php-config && \
-    make && make install && \
-
-#Install redis extension
-    curl -Lk https://github.com/phpredis/phpredis/archive/3.1.2.tar.gz | gunzip | tar x -C /home/extension && \
-    cd /home/extension/phpredis-3.1.2 && \
-    /usr/local/php/bin/phpize && \
-    ./configure --with-php-config=/usr/local/php/bin/php-config && \
-    make && make install && \
-
 #Install supervisor
     easy_install supervisor && \
     mkdir -p /var/{log/supervisor,run/{sshd,supervisord}} && \
@@ -142,7 +128,6 @@ RUN set -x && \
     mkdir -p --mode=0755 /var/cache/{yum,ldconfig} && \
     find /var/log -type f -delete && \
     rm -rf /home/nginx-php && \
-    rm -rf /home/extension && \
 
 #Change Mod from webdir
     chown -R www:www /data/www
@@ -154,11 +139,12 @@ ADD php.ini /usr/local/php/etc/php.ini
 ADD supervisord.conf /etc/
 
 #Create web folder
-VOLUME ["/data/www", "/usr/local/nginx/conf/ssl", "/usr/local/nginx/conf/vhost", "/usr/local/php/etc/php.d"]
+VOLUME ["/data/www", "/usr/local/nginx/conf/ssl", "/usr/local/nginx/conf/vhost", "/usr/local/php/etc/php.d", "/data/phpext"]
 
 ADD index.php /data/www/
 
 ADD extini/ /usr/local/php/etc/php.d/
+ADD extfile/ /data/phpext/
 
 #Update nginx config
 ADD nginx.conf /usr/local/nginx/conf/
