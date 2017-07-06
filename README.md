@@ -1,12 +1,9 @@
 Nginx and PHP for Docker
 
-## Last Version
-nginx: **1.11.6**   
-php:   **7.1.0**
+## Version
+nginx: **1.9.12**   
+php:   **7.0.4**
 
-## Docker Hub   
-**Nginx-PHP7:** [https://hub.docker.com/r/skiychan/nginx-php7](https://hub.docker.com/r/skiychan/nginx-php7)   
-   
 ## Installation
 Pull the image from the docker index rather than downloading the git repo. This prevents you having to build the image on every docker host.
 ```sh
@@ -43,40 +40,30 @@ docker run -d --name=nginx \
 skiychan/nginx-php7
 ```
 
-## Enabling Extensions With *.so
-Add xxx.ini to folder ```/your_php_extension_ini``` and add xxx.so to folder ```/your_php_extension_file```, then run the command:   
+## Enabling Extensions
 ```sh
-docker run --name nginx \
--p 8080:80 -d \
--v /your_php_extension_ini:/usr/local/php/etc/php.d \
--v /your_php_extension_file:/data/phpext \
-skiychan/nginx-php7
-```
-in xxx.ini, "zend_extension = /data/phpext/xxx.so", the zend_extension must be use ```/data/phpext/```.   
-
-## Enabling Extensions With Source
-Also, You can add the source to ```extension.sh```. Example:   
-```
-#Add extension mongodb
-curl -Lk https://pecl.php.net/get/mongodb-1.1.8.tgz | gunzip | tar x -C /home/extension && \
-cd /home/extension/mongodb-1.1.8 && \
-/usr/local/php/bin/phpize && \
-./configure --with-php-config=/usr/local/php/bin/php-config && \
-make && make install
-```
-Add ```mongodb.ini``` to folder ```extini```:   
-```
-extension=mongodb.so
+docker run --name nginx -p 8080:80 -d -v /your_php_extension:/usr/local/php/etc/php.d skiychan/nginx-php7
 ```
 
-You can see the **[wiki](https://github.com/skiy-dockerfile/nginx-php7/wiki/Question-&-Answer)**
+## ChangeLog
+**2016 / 02 / 13:**     
+Update nginx to version 1.9.11
 
-## [ChangeLog](changelogs.md)
+**2016 / 02 / 04:**      
+Update php to version 7.0.3   
 
-## Thanks
-[Legion](https://www.dwhd.org)  
+**2016 / 01 / 29:**     
+Add fileinfo support   
+Add ipv6 support   
+
+**2016 / 01 / 27:**     
+Update nginx to version 1.9.10
+
+**2016 / 01 / 25:**    
+Add xdebug support
+
 
 ## Author
 Author: Skiychan    
 Email:  dev@skiy.net       
-Link:   https://www.skiy.net
+Link:   https://www.zzzzy.com
