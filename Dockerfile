@@ -11,40 +11,39 @@ ENV PHP_VERSION 7.0.15
 ENV NGINX_VERSION 1.11.6
 
 RUN yum install -y gcc \
-    gcc-c++ \
-    autoconf \
-    automake \
-    libtool \
-    make \
-    cmake \
-    cronie \
-    && \
-    yum clean all \
+        gcc-c++ \
+        autoconf \
+        automake \
+        libtool \
+        make \
+        cmake \
+        cronie && \
+    yum clean all && \
     rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm && \
     yum install -y zlib \
-    zlib-devel \
-    openssl \
-    openssl-devel \
-    pcre-devel \
-    libxml2 \
-    libxml2-devel \
-    libcurl \
-    libcurl-devel \
-    libpng-devel \
-    libjpeg-devel \
-    freetype-devel \
-    libmcrypt-devel \
-    openssh-server \
-    python-setuptools \
-    libicu libicu-devel && \
-    yum clean all \
+        zlib-devel \
+        openssl \
+        openssl-devel \
+        pcre-devel \
+        libxml2 \
+        libxml2-devel \
+        libcurl \
+        libcurl-devel \
+        libpng-devel \
+        libjpeg-devel \
+        freetype-devel \
+        libmcrypt-devel \
+        openssh-server \
+        python-setuptools \
+        libicu libicu-devel && \
+    yum clean all && \
     groupadd -r www && \
-    useradd -M -s /sbin/nologin -r -g www www \
+    useradd -M -s /sbin/nologin -r -g www www && \
     mkdir -p /home/nginx-php && cd $_ && \
     curl -Lk http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | gunzip | tar x -C /home/nginx-php && \
     curl -Lk http://php.net/distributions/php-$PHP_VERSION.tar.gz | gunzip | tar x -C /home/nginx-php && \
     curl -Lk https://github.com/xdebug/xdebug/archive/XDEBUG_2_4_0RC3.tar.gz | gunzip | tar x -C /home/nginx-php && \
-    curl -Lk php-redis.tar.gz https://github.com/phpredis/phpredis/archive/3.1.0.tar.gz | gunzip | tar x -C /home/nginx-php \
+    curl -Lk php-redis.tar.gz https://github.com/phpredis/phpredis/archive/3.1.0.tar.gz | gunzip | tar x -C /home/nginx-php && \
     cd /home/nginx-php/nginx-$NGINX_VERSION && \
     ./configure --prefix=/usr/local/nginx \
         --user=www --group=www \
@@ -56,7 +55,7 @@ RUN yum install -y gcc \
         --without-mail_pop3_module \
         --without-mail_imap_module \
         --with-http_gzip_static_module && \
-    make && make install \ 
+    make && make install && \ 
     cd /home/nginx-php/php-$PHP_VERSION && \
     ./configure --prefix=/usr/local/php \
         --with-config-file-path=/usr/local/php/etc \
@@ -101,14 +100,14 @@ RUN yum install -y gcc \
         --enable-ipv6 \
         --disable-debug \
         --without-pear && \
-    make && make install \
+    make && make install && \
     cd /home/nginx-php/xdebug-XDEBUG_2_4_0RC3 && \
     /usr/local/php/bin/phpize && \
         ./configure 
             --enable-xdebug 
             --with-php-config=/usr/local/php/bin/php-config && \
     make && \
-    cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so \
+    cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so && \
     cd /home/nginx-php/phpredis-3.1.0 && \
     /usr/local/php/bin/phpize && \
         ./configure 
@@ -120,7 +119,7 @@ ADD php.ini /usr/local/php/etc/php.ini
 
 RUN	cd /home/nginx-php/php-$PHP_VERSION && \
     cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
-    cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf \
+    cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf && \
     easy_install supervisor && \
     mkdir -p /var/log/supervisor && \
     mkdir -p /var/run/sshd && \
