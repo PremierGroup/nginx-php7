@@ -19,11 +19,8 @@ RUN yum install -y gcc \
     cmake \
     cronie \
     && \
-    yum clean all
-
-#Install PHP library
-## libmcrypt-devel DIY
-RUN rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm && \
+    yum clean all \
+    rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm && \
     yum install -y wget \
     zlib \
     zlib-devel \
@@ -41,21 +38,15 @@ RUN rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch
     openssh-server \
     python-setuptools \
     libicu libicu-devel && \
-    yum clean all
-
-#Add user
-RUN groupadd -r www && \
-    useradd -M -s /sbin/nologin -r -g www www
-
-#Download nginx & php
-RUN mkdir -p /home/nginx-php && cd $_ && \
+    yum clean all \
+    groupadd -r www && \
+    useradd -M -s /sbin/nologin -r -g www www \
+    mkdir -p /home/nginx-php && cd $_ && \
     wget -c -O nginx.tar.gz http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz && \
     wget -O php.tar.gz http://php.net/distributions/php-$PHP_VERSION.tar.gz && \
     curl -O -SL https://github.com/xdebug/xdebug/archive/XDEBUG_2_4_0RC3.tar.gz && \
-    wget -O php-redis.tar.gz https://github.com/phpredis/phpredis/archive/3.1.0.tar.gz
-
-#Make install nginx
-RUN cd /home/nginx-php && \
+    wget -O php-redis.tar.gz https://github.com/phpredis/phpredis/archive/3.1.0.tar.gz \
+    cd /home/nginx-php && \
     tar -zxvf nginx.tar.gz && \
     cd nginx-$NGINX_VERSION && \
     ./configure --prefix=/usr/local/nginx \
@@ -68,10 +59,8 @@ RUN cd /home/nginx-php && \
     --without-mail_pop3_module \
     --without-mail_imap_module \
     --with-http_gzip_static_module && \
-    make && make install
-
-#Make install php
-RUN cd /home/nginx-php && \
+    make && make install\ 
+    cd /home/nginx-php && \
     tar zvxf php.tar.gz && \
     cd php-$PHP_VERSION && \
     ./configure --prefix=/usr/local/php \
@@ -117,19 +106,15 @@ RUN cd /home/nginx-php && \
     --enable-ipv6 \
     --disable-debug \
     --without-pear && \
-    make && make install
-
-#Add xdebug extension
-RUN cd /home/nginx-php && \
+    make && make install \
+    cd /home/nginx-php && \
     tar -zxvf XDEBUG_2_4_0RC3.tar.gz && \
     cd xdebug-XDEBUG_2_4_0RC3 && \
     /usr/local/php/bin/phpize && \
     ./configure --enable-xdebug --with-php-config=/usr/local/php/bin/php-config && \
     make && \
-    cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so
-    
-#Add php-redis extension
-RUN cd /home/nginx-php && \
+    cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so \
+    cd /home/nginx-php && \
     tar -zxvf php-redis.tar.gz && \
     cd phpredis-3.1.0 && \
     /usr/local/php/bin/phpize && \
@@ -141,10 +126,8 @@ ADD php.ini /usr/local/php/etc/php.ini
 
 RUN	cd /home/nginx-php/php-$PHP_VERSION && \
     cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
-    cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
-
-#Install supervisor
-RUN easy_install supervisor && \
+    cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf \
+    easy_install supervisor && \
     mkdir -p /var/log/supervisor && \
     mkdir -p /var/run/sshd && \
     mkdir -p /var/run/supervisord
