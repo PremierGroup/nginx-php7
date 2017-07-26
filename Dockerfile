@@ -103,8 +103,8 @@ RUN yum install -y gcc \
     make && make install && \
     cd /home/nginx-php/xdebug-XDEBUG_2_4_0RC3 && \
     /usr/local/php/bin/phpize && \
-        ./configure 
-            --enable-xdebug 
+        ./configure \
+            --enable-xdebug \
             --with-php-config=/usr/local/php/bin/php-config && \
     make && \
     cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so && \
