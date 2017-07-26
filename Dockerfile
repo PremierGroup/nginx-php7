@@ -107,19 +107,19 @@ RUN yum install -y gcc \
             --enable-xdebug \
             --with-php-config=/usr/local/php/bin/php-config && \
     make && \
-    cp modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so && \
+    cp -v modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so && \
     cd /home/nginx-php/phpredis-3.1.0 && \
     /usr/local/php/bin/phpize && \
         ./configure 
             --with-php-config=/usr/local/php/bin/php-config && \
     make && make install && \
-    cp modules/redis.so /usr/local/php/lib/php/extensions/redis.so
+    cp -v modules/redis.so /usr/local/php/lib/php/extensions/redis.so
 
 ADD php.ini /usr/local/php/etc/php.ini
 
 RUN	cd /home/nginx-php/php-$PHP_VERSION && \
-    cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
-    cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf && \
+    cp -v /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
+    cp -v /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf && \
     easy_install supervisor && \
     mkdir -p /var/log/supervisor && \
     mkdir -p /var/run/sshd && \
