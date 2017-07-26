@@ -110,7 +110,7 @@ RUN yum install -y gcc \
     cp -v modules/xdebug.so /usr/local/php/lib/php/extensions/xdebug.so && \
     cd /home/nginx-php/phpredis-3.1.0 && \
     /usr/local/php/bin/phpize && \
-        ./configure 
+        ./configure \
             --with-php-config=/usr/local/php/bin/php-config && \
     make && make install && \
     cp -v modules/redis.so /usr/local/php/lib/php/extensions/redis.so
