@@ -27,6 +27,8 @@ RUN yum install -y gcc \
         pcre-devel \
         libxml2 \
         libxml2-devel \
+        libxslt \
+        libxslt-devel \
         libcurl \
         libcurl-devel \
         libpng-devel \
@@ -75,6 +77,7 @@ RUN yum install -y gcc \
         --with-jpeg-dir \
         --with-freetype-dir \
         --with-xmlrpc \
+        --with-xsl \
         --with-mhash \
         --enable-fpm \
         --enable-xml \
